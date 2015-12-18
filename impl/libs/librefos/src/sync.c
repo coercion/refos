@@ -62,7 +62,7 @@ sync_acquire(sync_mutex_t mutex)
 {
     seL4_Word badge;
     assert(mutex);
-    seL4_MessageInfo_t msginfo = seL4_Wait(mutex->mapping, &badge);
+    seL4_MessageInfo_t msginfo = seL4_Recv(mutex->mapping, &badge);
     assert(badge == SYNC_ASYNC_BADGE_MAGIC);
     (void) msginfo;
 }
