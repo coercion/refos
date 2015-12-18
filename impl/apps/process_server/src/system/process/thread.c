@@ -13,12 +13,6 @@
 #include "../../common.h"
 #include "../addrspace/vspace.h"
 
-/* Forward declaration here, to work around the assumption by sel4utils_start_thread that the thread
-   stack is in same vspace as the caller. If someone lifts that assumption at some point, this code
-   should be fixed accordingly.
-*/
-int sel4utils_internal_start_thread(sel4utils_thread_t *thread, void *entry_point, void *arg0,
-        void *arg1, int resume, void *local_stack_top, void *dest_stack_top);
 int
 thread_config(struct proc_tcb *thread, uint8_t priority, vaddr_t entryPoint,
                    struct vs_vspace *vspace)
@@ -61,12 +55,12 @@ thread_start(struct proc_tcb *thread, void *arg0, void *arg1)
     assert(thread->entryPoint);
 
     /* Start the thread using seL4utils library. */
-    int error = sel4utils_internal_start_thread (
+    int error = sel4utils_start_thread (
             &thread->sel4utilsThread,
             (void *) thread->entryPoint,
             arg0, arg1,
-            true, NULL, thread->sel4utilsThread.stack_top
-    );
+            true);
+    
     if (error) {
         ROS_ERROR("sel4utils_start_thread failed. error: %d.", error);
         return EINVALID;
